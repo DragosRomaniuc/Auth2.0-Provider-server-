@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Logged In Client</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body class='container' style="padding-top: 15%; margin-left: 10%;">
+  <h1>Please enter your email: </h1>
+  <p>OAuth Server needs it in order to redirect to your federation login page</p>
+  <input type='email' id='emailInput' />
+  <button onclick = 'onClick()' class='btn btn-success' >Submit</button>
+</br>
+</br>
+
+  <p><span id='success' class='alert-success'></span></p>
+  <p><span id='failed' class='alert-danger'></span></p>
+  <script>
+  let code
+  let token // TODO: DON'T STORE THE TOKEN ON THE CLIENT FRONT END!!! Put it in a session cookie or something to be more secure
+  let tokenType
+  let refreshToken;
+
+  async function onClick() {
+    let email = document.getElementById('emailInput').value;
+    console.log('email is', email);
+    let result = await fetch('/oauth/checkEmail', {
+      method: 'POST',
+      body: JSON.stringify({
+          email
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+    result = await result.json();
+    // console.log(result);
+    if(result.data !== null){
+        document.getElementById('success').innerText = `SUCCESS! Your organization ${result.data.name} was found in our database.`;
+        document.getElementById('failed').innerText = '';
+    } else {
+        document.getElementById('success').innerText = ``;
+        document.getElementById('failed').innerText = `FAILED! Your organization was not found in our database.`;
+
+    }
+    console.log(result.data, 'result is');
+  };
+  </script>
+</body>
+</html>
